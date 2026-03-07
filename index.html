@@ -3,208 +3,157 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NQ Recon Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>NQ Dashboard 2026</title>
   <link rel="stylesheet" href="css/styles.css" />
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-mark">NQ</div>
+  <header class="topbar">
+    <div>
+      <h1>NQ Dashboard 2026</h1>
+      <p class="subtitle">Web dashboard inspired by your Power BI report</p>
+      <p class="update-line">
+        <strong>Update:</strong> <span id="updateDate">Not loaded</span>
+      </p>
+    </div>
+
+    <div class="upload-area">
+      <button id="uploadBtn" class="upload-btn">Load Excel File</button>
+      <input type="file" id="excelFile" accept=".xlsx,.xls" style="display: none;" />
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="filters-card">
+      <div class="filters-grid filters-grid-3">
         <div>
-          <h1>NQ Recon</h1>
-          <p>Web dashboard from Excel</p>
+          <label for="officeFilter">Office</label>
+          <select id="officeFilter">
+            <option value="">All Offices</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="reconcilerFilter">Reconciler</label>
+          <select id="reconcilerFilter">
+            <option value="">All Reconcilers</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="searchBox">Search title / unit / group</label>
+          <input type="text" id="searchBox" placeholder="Type here..." />
+        </div>
+      </div>
+    </section>
+
+    <section class="kpi-grid">
+      <div class="card kpi-card">
+        <h2>Total NQ Items</h2>
+        <div class="big-number" id="totalNQ">0</div>
+        <div class="small-note">Based on filtered records</div>
+      </div>
+
+      <div class="card gauge-card">
+        <h2>NQ Load Gauge</h2>
+        <div class="gauge-wrapper">
+          <div class="gauge-track">
+            <div class="gauge-fill" id="gaugeFill"></div>
+          </div>
+          <div class="gauge-scale">
+            <span>0</span>
+            <span id="gaugeMiddle">500</span>
+            <span id="gaugeMax">1000</span>
+          </div>
         </div>
       </div>
 
-      <nav class="nav">
-        <button class="nav-btn active" data-tab="summary">Summary NQ</button>
-        <button class="nav-btn" data-tab="details">Data NQ</button>
-      </nav>
+      <div class="card update-card">
+        <h2>Excel Information</h2>
+        <p><strong>Loaded file:</strong> <span id="fileName">None</span></p>
+        <p><strong>File last modified:</strong> <span id="fileModified">N/A</span></p>
+        <p><strong>Dashboard refreshed:</strong> <span id="dashboardRefresh">N/A</span></p>
+      </div>
+    </section>
 
-      <section class="filter-card">
-        <h2>Filters</h2>
-        <label>
-          Office
-          <select id="officeFilter">
-            <option value="">All offices</option>
-          </select>
-        </label>
-
-        <label>
-          Reconciler
-          <select id="reconcilerFilter">
-            <option value="">All reconcilers</option>
-          </select>
-        </label>
-
-        <label>
-          Status
-          <select id="statusFilter">
-            <option value="">All status</option>
-          </select>
-        </label>
-
-        <label>
-          Search
-          <input id="searchInput" type="text" placeholder="Unit, title, office..." />
-        </label>
-
-        <button id="resetFilters" class="secondary-btn">Reset filters</button>
-      </section>
-
-      <section class="upload-card">
-        <h2>Excel source</h2>
-        <p>Default file is inside <code>/data</code>. You can also replace it with your own export.</p>
-        <label class="file-input">
-          <span>Upload .xlsx</span>
-          <input id="fileInput" type="file" accept=".xlsx,.xls" />
-        </label>
-      </section>
-    </aside>
-
-    <main class="main-content">
-      <header class="topbar">
-        <div>
-          <p class="eyebrow">GitHub Pages + HTML + CSS + JavaScript</p>
-          <h2>NQ Dashboard</h2>
+    <section class="charts-grid">
+      <div class="card">
+        <h2>Sum of NQ Items by Office</h2>
+        <div class="chart-box">
+          <canvas id="officePieChart"></canvas>
         </div>
-        <div class="meta">
-          <div class="meta-card">
-            <span>Rows</span>
-            <strong id="rowCount">0</strong>
-          </div>
-          <div class="meta-card">
-            <span>Source</span>
-            <strong id="updatedAt">Loading...</strong>
-          </div>
+      </div>
+
+      <div class="card">
+        <h2>Summary by Reconciler</h2>
+        <div class="table-wrapper small-table">
+          <table id="reconcilerSummaryTable">
+            <thead>
+              <tr>
+                <th>Reconciler</th>
+                <th>Sum of NQ Items</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+              <tr>
+                <th>Total</th>
+                <th id="reconcilerTotalFooter">0</th>
+              </tr>
+            </tfoot>
+          </table>
         </div>
-      </header>
+      </div>
 
-      <section id="summary" class="tab-panel active">
-        <div class="grid summary-grid">
-          <article class="card gauge-card">
-            <div class="card-header">
-              <h3>Non-Qualities</h3>
-              <p>Total NQ items in current view</p>
-            </div>
-            <div class="gauge-wrap">
-              <canvas id="gaugeChart"></canvas>
-              <div class="gauge-center">
-                <span>Total</span>
-                <strong id="totalNQ">0</strong>
-              </div>
-            </div>
-            <div class="gauge-scale">
-              <span>0</span>
-              <span>400</span>
-              <span>1000</span>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="card-header">
-              <h3>By Reconciler</h3>
-              <p>Sum of NQ items</p>
-            </div>
-            <div class="table-wrap small-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Reconciler</th>
-                    <th class="num">NQ Items</th>
-                  </tr>
-                </thead>
-                <tbody id="reconcilerSummaryBody"></tbody>
-                <tfoot>
-                  <tr>
-                    <th>Total</th>
-                    <th id="reconcilerTotal" class="num">0</th>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </article>
-
-          <article class="card">
-            <div class="card-header">
-              <h3>By Office</h3>
-              <p>Sum of NQ items</p>
-            </div>
-            <div class="table-wrap small-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Office</th>
-                    <th class="num">NQ Items</th>
-                  </tr>
-                </thead>
-                <tbody id="officeSummaryBody"></tbody>
-                <tfoot>
-                  <tr>
-                    <th>Total</th>
-                    <th id="officeTotal" class="num">0</th>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </article>
-
-          <article class="card chart-card wide">
-            <div class="card-header">
-              <h3>Sum of NQ Items by Office</h3>
-              <p>Distribution similar to your Power BI summary</p>
-            </div>
-            <canvas id="officePieChart"></canvas>
-          </article>
-
-          <article class="card reminder-card wide">
-            <p class="update-note">Static note - edit in HTML if needed</p>
-            <h3>Month Closing Days</h3>
-            <div class="closing-days">
-              <p>D365: Apr 2nd, 4:00 PM</p>
-              <p>CFIS: Apr 6th, 5:00 PM</p>
-            </div>
-            <div class="reminder-text">
-              Reminder: MME closing must occur at least 2 days before the first day of the next month.
-            </div>
-          </article>
+      <div class="card">
+        <h2>Summary by Office</h2>
+        <div class="table-wrapper small-table">
+          <table id="officeSummaryTable">
+            <thead>
+              <tr>
+                <th>Office</th>
+                <th>Sum of NQ Items</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+              <tr>
+                <th>Total</th>
+                <th id="officeTotalFooter">0</th>
+              </tr>
+            </tfoot>
+          </table>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="details" class="tab-panel">
-        <div class="card">
-          <div class="card-header">
-            <h3>Detailed NQ Data</h3>
-            <p>Top records sorted by NQ Items</p>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Office</th>
-                  <th>Reconciler</th>
-                  <th>Unit</th>
-                  <th># Group ID</th>
-                  <th>Title</th>
-                  <th class="num">NQ Items</th>
-                  <th>Last Recon Date</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="detailBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
+    <section class="card">
+      <h2>Detailed Data</h2>
+      <div class="table-wrapper detail-table-box">
+        <table id="detailTable">
+          <thead>
+            <tr>
+              <th>Office</th>
+              <th>Reconciler</th>
+              <th>Unit</th>
+              <th># Group ID</th>
+              <th>Title</th>
+              <th>NQ Items</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot>
+            <tr>
+              <th colspan="5">Total</th>
+              <th id="detailTotalFooter">0</th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+  </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
