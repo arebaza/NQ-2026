@@ -17,8 +17,10 @@
     </div>
 
     <div class="upload-area">
-      <button id="uploadBtn" class="upload-btn">Load Excel File</button>
-      <input type="file" id="excelFile" accept=".xlsx,.xls" style="display: none;" />
+      <div class="system-file-box">
+        <span class="system-file-label">Last file loaded:</span>
+        <span id="systemFileName">latest-nq.xlsx</span>
+      </div>
     </div>
   </header>
 
@@ -70,7 +72,7 @@
       <div class="card update-card">
         <h2>Excel Information</h2>
         <p><strong>Loaded file:</strong> <span id="fileName">None</span></p>
-        <p><strong>File last modified:</strong> <span id="fileModified">N/A</span></p>
+        <p><strong>File source:</strong> <span id="fileModified">N/A</span></p>
         <p><strong>Dashboard refreshed:</strong> <span id="dashboardRefresh">N/A</span></p>
       </div>
     </section>

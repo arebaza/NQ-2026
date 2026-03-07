@@ -45,19 +45,18 @@ body {
   gap: 10px;
 }
 
-.upload-btn {
-  background: #22c55e;
+.system-file-box {
+  background: rgba(255, 255, 255, 0.12);
   color: white;
-  border: none;
-  padding: 12px 18px;
+  padding: 12px 16px;
   border-radius: 10px;
-  cursor: pointer;
-  font-weight: 800;
-  font-size: 16px;
+  font-weight: 700;
+  font-size: 15px;
 }
 
-.upload-btn:hover {
-  background: #16a34a;
+.system-file-label {
+  color: #bfdbfe;
+  margin-right: 8px;
 }
 
 .container {

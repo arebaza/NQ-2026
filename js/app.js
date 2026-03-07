@@ -1,26 +1,10 @@
 let allRows = [];
 let officePieChart = null;
 
-// Change this password
-const ADMIN_PASSWORD = "270714";
-
 document.addEventListener("DOMContentLoaded", () => {
-  const uploadBtn = document.getElementById("uploadBtn");
-  const excelFileInput = document.getElementById("excelFile");
   const officeFilter = document.getElementById("officeFilter");
   const reconcilerFilter = document.getElementById("reconcilerFilter");
   const searchBox = document.getElementById("searchBox");
-
-  uploadBtn.addEventListener("click", () => {
-    const password = prompt("Enter password to update the Excel file:");
-    if (password === ADMIN_PASSWORD) {
-      excelFileInput.click();
-    } else if (password !== null) {
-      alert("Incorrect password. You are not authorized.");
-    }
-  });
-
-  excelFileInput.addEventListener("change", handleFileUpload);
 
   officeFilter.addEventListener("change", () => {
     updateDependentFilters("office");
@@ -39,43 +23,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function loadDefaultExcel() {
   try {
-    const response = await fetch("data/latest-nq.xlsx");
+    const filePath = "data/latest-nq.xlsx";
+    const response = await fetch(filePath);
+
     if (!response.ok) {
       throw new Error("Default Excel file not found.");
     }
 
     const arrayBuffer = await response.arrayBuffer();
 
+    document.getElementById("systemFileName").textContent = "latest-nq.xlsx";
     document.getElementById("fileName").textContent = "latest-nq.xlsx";
-    document.getElementById("fileModified").textContent = "Default file from /data folder";
+    document.getElementById("fileModified").textContent = "Current system file from /data folder";
 
     processExcel(arrayBuffer);
     updateDashboardRefreshTime();
   } catch (error) {
     console.error("Error loading default Excel file:", error);
-    document.getElementById("fileName").textContent = "No default file found";
+    document.getElementById("fileName").textContent = "No system file found";
     document.getElementById("fileModified").textContent = "N/A";
     document.getElementById("dashboardRefresh").textContent = "N/A";
+    document.getElementById("systemFileName").textContent = "No file";
   }
-}
-
-function handleFileUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-
-  reader.onload = function (e) {
-    const data = e.target.result;
-
-    document.getElementById("fileName").textContent = file.name;
-    document.getElementById("fileModified").textContent = formatFileModifiedDate(file.lastModified);
-
-    processExcel(data);
-    updateDashboardRefreshTime();
-  };
-
-  reader.readAsArrayBuffer(file);
 }
 
 function processExcel(data) {
@@ -105,7 +74,7 @@ function processExcel(data) {
     office: getValue(row, ["office"]),
     reconciler: getValue(row, ["reconciler"]),
     unit: getValue(row, ["unit"]),
-    groupId: getValue(row, ["#groupid", "groupid", "group id", "# group id", "numbergroupid"]),
+    groupId: getValue(row, ["#groupid", "groupid", "groupidnumber", "group id", "# group id", "numbergroupid"]),
     title: getValue(row, ["title"]),
     nqItems: toNumber(getValue(row, ["nqitems", "nqitem", "sumofnqitems", "sum nq items"]))
   }));
@@ -306,19 +275,13 @@ function renderOfficePieChart(rows) {
     type: "pie",
     data: {
       labels,
-      datasets: [
-        {
-          data
-        }
-      ]
+      datasets: [{ data }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: {
-          position: "right"
-        },
+        legend: { position: "right" },
         tooltip: {
           callbacks: {
             label: function (context) {
@@ -383,11 +346,7 @@ function renderDetailTable(rows) {
   const sortedRows = [...rows].sort((a, b) => b.nqItems - a.nqItems);
 
   if (sortedRows.length === 0) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="6">No data found.</td>
-      </tr>
-    `;
+    tbody.innerHTML = `<tr><td colspan="6">No data found.</td></tr>`;
     return;
   }
 
@@ -425,17 +384,6 @@ function getUniqueSorted(array) {
 
 function formatNumber(value) {
   return new Intl.NumberFormat("en-US").format(value || 0);
-}
-
-function formatFileModifiedDate(timestamp) {
-  const date = new Date(timestamp);
-  return date.toLocaleString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
 }
 
 function updateDashboardRefreshTime() {
