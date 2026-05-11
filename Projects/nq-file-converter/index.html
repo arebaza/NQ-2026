@@ -1,29 +1,37 @@
-<!doctype html>
-<html lang="en-US">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NQ File Converter</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
-  <script src="app.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NQ / Outstanding File Converter</title>
+
+    <!-- SheetJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <main class="container">
-    <section class="card">
-      <h1>NQ File Converter</h1>
-      <p>
-        Upload the file that ends in<strong>- O.xlsx</strong>. This tool will create the two files required by the system:
-        <strong>Team Recon Report NQ.xlsx</strong> and <strong>NQ by Accounts.xlsx</strong>.
-      </p>
 
-      <label for="inputFile" class="file-label">Select the - O Excel file</label>
-      <input id="inputFile" type="file" accept=".xlsx,.xls" />
+    <div class="container">
+        <h1>NQ / Outstanding File Converter</h1>
 
-      <button id="convertBtn" type="button" disabled>Convert Files</button>
+        <label for="processType">Select Process:</label>
+        <select id="processType">
+            <option value="NQ">NQ Items</option>
+            <option value="OU">Outstanding Items</option>
+        </select>
 
-      <div id="message" class="message" aria-live="polite"></div>
-    </section>
-  </main>
+        <br><br>
+
+        <input type="file" id="fileInput" accept=".xlsx" />
+
+        <br><br>
+
+        <button onclick="processFile()">Convert File</button>
+
+        <p id="status"></p>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
