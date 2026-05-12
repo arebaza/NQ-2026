@@ -1,37 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en-US">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NQ / Outstanding File Converter</title>
-
-    <!-- SheetJS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NQ and Outstanding Converter + Reporting</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+  <script src="app.js" defer></script>
 </head>
 <body>
+  <main class="page">
+    <section class="card">
+      <h1>NQ and Outstanding Tool</h1>
+      <p class="intro">
+        Convert the original GSC_NQ_GROUPS file and create weekly performance reports by reconciler. Reporting separates NQ items from Outstanding items because NQ is included in Outstanding.
+      </p>
 
-    <div class="container">
-        <h1>NQ / Outstanding File Converter</h1>
+      <nav class="tabs" aria-label="Tool options">
+        <button class="tab-button active" type="button" data-tab="converterPanel">Convert Files</button>
+        <button class="tab-button" type="button" data-tab="reportPanel">Weekly Reporting</button>
+      </nav>
 
-        <label for="processType">Select Process:</label>
-        <select id="processType">
-            <option value="NQ">NQ Items</option>
-            <option value="OU">Outstanding Items</option>
-        </select>
+      <section id="converterPanel" class="panel active">
+        <h2>Convert original file</h2>
+        <form id="converterForm" class="form">
+          <label for="itemType">Select file process</label>
+          <select id="itemType" required>
+            <option value="nq">NQ Items - original file must end in - NQ.xlsx or - O.xlsx</option>
+            <option value="outstanding">Outstanding Items - original file must end in - OU.xlsx</option>
+          </select>
 
-        <br><br>
+          <label for="sourceFile">Upload original Excel file</label>
+          <input id="sourceFile" type="file" accept=".xlsx,.xls" required />
 
-        <input type="file" id="fileInput" accept=".xlsx" />
+          <button type="submit">Generate Excel Files</button>
+        </form>
 
-        <br><br>
+        <div id="convertMessage" class="message" aria-live="polite"></div>
+      </section>
 
-        <button onclick="processFile()">Convert File</button>
+      <section id="reportPanel" class="panel">
+        <h2>Weekly performance report</h2>
+        <p class="small-note">
+          Upload all daily <strong>NQ by Accounts</strong> and <strong>Outstanding by Accounts</strong> files for the week. The report will calculate <strong>Outstanding Items without NQ</strong> using: <strong>Outstanding total - NQ items</strong>. The date must be at the end of the file name. It accepts English or Spanish months, for example: <em>NQ by Accounts 7 May 2026.xlsx</em> or <em>NQ by Accounts 24 Abr 2026.xlsx</em>.
+        </p>
 
-        <p id="status"></p>
-    </div>
+        <form id="reportForm" class="form">
+          <label for="reportFiles">Upload daily report files</label>
+          <input id="reportFiles" type="file" accept=".xlsx,.xls" multiple required />
 
-    <script src="app.js"></script>
+          <button type="submit">Generate Weekly Report</button>
+        </form>
+
+        <div id="reportMessage" class="message" aria-live="polite"></div>
+        <div id="previewArea" class="preview"></div>
+      </section>
+    </section>
+  </main>
 </body>
 </html>
