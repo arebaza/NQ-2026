@@ -1,61 +1,92 @@
-<!doctype html>
-<html lang="en-US">
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NQ and Outstanding Converter + Reporting</title>
-  <link rel="stylesheet" href="styles.css" />
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
-  <script src="app.js" defer></script>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        NQ & Outstanding Converter + Reporting
+    </title>
+
+    <link rel="stylesheet"
+          href="styles.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
 </head>
+
 <body>
-  <main class="page">
-    <section class="card">
-      <h1>NQ and Outstanding Tool</h1>
-      <p class="intro">
-        Convert the original GSC_NQ_GROUPS file and create weekly performance reports by reconciler. Reporting separates NQ items from Outstanding items because NQ is included in Outstanding.
-      </p>
 
-      <nav class="tabs" aria-label="Tool options">
-        <button class="tab-button active" type="button" data-tab="converterPanel">Convert Files</button>
-        <button class="tab-button" type="button" data-tab="reportPanel">Weekly Reporting</button>
-      </nav>
+    <div class="container">
 
-      <section id="converterPanel" class="panel active">
-        <h2>Convert original file</h2>
-        <form id="converterForm" class="form">
-          <label for="itemType">Select file process</label>
-          <select id="itemType" required>
-            <option value="nq">NQ Items - original file must end in - NQ.xlsx or - O.xlsx</option>
-            <option value="outstanding">Outstanding Items - original file must end in - OU.xlsx</option>
-          </select>
+        <h1>
+            NQ & Outstanding Converter + Reporting
+        </h1>
 
-          <label for="sourceFile">Upload original Excel file</label>
-          <input id="sourceFile" type="file" accept=".xlsx,.xls" required />
+        <div class="card">
 
-          <button type="submit">Generate Excel Files</button>
-        </form>
+            <h2>
+                1. Select Process
+            </h2>
 
-        <div id="convertMessage" class="message" aria-live="polite"></div>
-      </section>
+            <select id="processType">
 
-      <section id="reportPanel" class="panel">
-        <h2>Weekly performance report</h2>
-        <p class="small-note">
-          Upload all daily <strong>NQ by Accounts</strong> and <strong>Outstanding by Accounts</strong> files for the week. The report will calculate <strong>Outstanding Items without NQ</strong> using: <strong>Outstanding total - NQ items</strong>. The date must be at the end of the file name. It accepts English or Spanish months, for example: <em>NQ by Accounts 7 May 2026.xlsx</em> or <em>NQ by Accounts 24 Abr 2026.xlsx</em>.
-        </p>
+                <option value="NQ">
+                    NQ Items
+                </option>
 
-        <form id="reportForm" class="form">
-          <label for="reportFiles">Upload daily report files</label>
-          <input id="reportFiles" type="file" accept=".xlsx,.xls" multiple required />
+                <option value="OUTSTANDING">
+                    Outstanding Items
+                </option>
 
-          <button type="submit">Generate Weekly Report</button>
-        </form>
+            </select>
 
-        <div id="reportMessage" class="message" aria-live="polite"></div>
-        <div id="previewArea" class="preview"></div>
-      </section>
-    </section>
-  </main>
+        </div>
+
+        <div class="card">
+
+            <h2>
+                2. Upload Original File
+            </h2>
+
+            <input type="file"
+                   id="sourceFile">
+
+            <button onclick="processFile()">
+
+                Generate Files
+
+            </button>
+
+        </div>
+
+        <div class="card">
+
+            <h2>
+                3. Weekly Reporting
+            </h2>
+
+            <input type="file"
+                   id="weeklyFiles"
+                   multiple>
+
+            <button onclick="generateWeeklyReport()">
+
+                Generate Weekly Report
+
+            </button>
+
+        </div>
+
+        <div id="message"></div>
+
+    </div>
+
+    <script src="app.js"></script>
+
 </body>
 </html>
